@@ -1,0 +1,66 @@
+body, html {
+  margin: 0;
+  padding: 0;
+}
+
+#slides {
+  .slide {
+    width: 75%;
+
+    .content {
+      text-align: center;
+
+      width: 100%;
+      height: 100%;
+
+      h1, h2, h3 {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: 5em;
+      }
+
+      h2 {
+        font-size: 3em;
+      }
+
+      h3 {
+        font-size: 1.75em;
+      }
+
+      div.highlight {
+        text-align: left;
+
+        padding: 1em;
+
+        font-size: 160%;
+
+        pre {
+          margin: 0;
+        }
+      }
+    }
+
+    &.style-larger {
+      div.highlight {
+        font-size: 200%;
+      }
+    }
+
+    &.style-even-larger {
+      div.highlight {
+        font-size: 250%;
+      }
+    }
+
+    &.activeslide {
+      opacity: 1 !important;
+    }
+
+    &.inactiveslide {
+      opacity: 0.4;
+    }
+  }
+}
+

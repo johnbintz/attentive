@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'bundler'
+
+begin
+  Bundler.setup(:default)
+rescue Bundler::GemfileNotFound
+  $: << File.expand_path('../../lib', __FILE__)
+end
+
+require 'rack'
+require 'attentive'
+require 'pygments'
+require 'coffee_script'
+require 'sass'
+
+load 'presentation.rb'
+
+# make sure pygments is ready
+Pygments.highlight("attentive")
+
+Rack::Handler::WEBrick.run(Attentive::Server, :Port => 9393) do |server|
+  trap(:INT) { server.shutdown }
+end
+
