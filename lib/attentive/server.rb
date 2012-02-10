@@ -10,6 +10,8 @@ require 'sinatra/base'
 
 require 'rack/builder'
 
+require 'forwardable'
+
 module Attentive
   class Server < Rack::Builder
     def self.call(env)
@@ -34,55 +36,91 @@ module Attentive
     end
   end
 
+  class Slide
+    extend Forwardable
+
+    def_delegators :lines, :<<
+
+    attr_reader :lines
+
+    def initialize(options = {})
+      @options = options
+      @lines = []
+    end
+
+    def classes
+      ([ 'slide' ] + (@options[:classes] || []).collect { |klass| "style-#{klass}" }).join(' ')
+    end
+
+    def code_output
+      new_lines = []
+
+      code_block = nil
+      code_language = nil
+
+      lines.each do |line|
+        if line[%r{^```}]
+          if code_block
+            new_lines << Pygments.highlight(code_block.join, :lexer => code_language)
+            code_block = nil
+          else
+            code_block = []
+
+            parts = line.split(' ')
+
+            code_language = case parts.length
+            when 1
+              'text'
+            else
+              parts.last
+            end
+          end
+        else
+          if code_block
+            code_block << line
+          else
+            new_lines << line
+          end
+        end
+      end
+
+      new_lines
+    end
+
+    def markdown_output
+      RDiscount.new(code_output.join).to_html
+    end
+
+    def to_html
+      output =  [ %{<div class="#{classes}"><div class="content">} ]
+
+      output << markdown_output
+
+      output << "</div></div>"
+
+      output.join("\n")
+    end
+  end
+
   class Sinatra < Sinatra::Base
     set :logging, true
 
     helpers do
-      def trim_lines(code)
-        code.lines.collect(&:strip).join("\n")
-      end
-
       def slides
-        highlights = []
+        slides = []
 
-        output = Dir['presentation/*.html'].sort.collect do |file|
-          xml = Nokogiri::XML("<doc>#{File.read(file)}</doc>")
-
-          xml.search('slide').collect do |node|
-            classes = %w{slide}
-
-            if style = node.attributes['style']
-              style.to_s.split(' ').each { |s| classes << "style-#{s}" }
-            end
-
-            node.search('code').collect do |code|
-              highlighted_code = Pygments.highlight(code.inner_text.strip, :lexer => code.attributes['lang'].to_s)
-
-              code.add_next_sibling("{highlight#{highlights.length}}")
-
-              code.remove
-
-              highlights << highlighted_code
-            end
-
-            content = node.inner_html
-
-            content = case node.attributes['content'].to_s
-            when 'html'
-              content
+        Dir['presentation/*.slides'].sort.each do |file|
+          File.readlines(file).each do |line|
+            if line[%r{^!SLIDE}]
+              slides << Slide.new(:classes => line.split(' ')[1..-1])
             else
-              RDiscount.new(trim_lines(content)).to_html
+              slides << Slide.new if !slides.last
+              slides.last << line
             end
-
-            %{<div class="#{classes.join(' ')}"><div class="content">#{content}</div></div>}
-          end.join
-        end.join
-
-        highlights.each_with_index do |highlight, index|
-          output.gsub!("{highlight#{index}}", highlight)
+          end
         end
 
-        output
+        slides.collect(&:to_html).join
       end
     end
 

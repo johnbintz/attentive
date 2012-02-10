@@ -9,6 +9,7 @@ rescue Bundler::GemfileNotFound
   $: << File.expand_path('../../lib', __FILE__)
 end
 
+require 'thor'
 require 'rack'
 require 'attentive'
 require 'pygments'
