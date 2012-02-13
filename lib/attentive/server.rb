@@ -14,7 +14,7 @@ require 'forwardable'
 
 module Attentive
   class Server < Rack::Builder
-    def start!
+    def self.start(options)
       require 'rack'
       require 'pygments'
       require 'coffee_script'

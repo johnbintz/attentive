@@ -26,7 +26,7 @@ class Attentive::CLI < Thor
   method_options [ :port, '-p' ] => 9393
   def start
     if Attentive.has_presentation?
-      Attentive::Server.start!
+      Attentive::Server.start(options)
     else
       raise Attentive::NoPresentationError
     end

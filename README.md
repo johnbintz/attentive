@@ -19,3 +19,4 @@ Run the presentation that's in the current directory on port 9393.
 
 Run the current presentation on another port.
 
+Edit `presentation.rb` and start adding `.slides` files in `presentation/`. The files are processed in sort order.
