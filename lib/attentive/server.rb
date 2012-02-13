@@ -34,6 +34,7 @@ module Attentive
           env = Sprockets::EnvironmentWithVendoredGems.new
           env.append_path 'assets/javascripts'
           env.append_path 'assets/stylesheets'
+          env.append_path 'assets/images'
           env.append_path Attentive.root.join('vendor/assets/javascripts')
           env.append_path Attentive.root.join('lib/assets/javascripts')
           env.append_path Attentive.root.join('lib/assets/stylesheets')
