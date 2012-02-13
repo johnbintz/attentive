@@ -9,6 +9,8 @@ rescue Bundler::GemfileNotFound
   $: << File.expand_path('../../lib', __FILE__)
 end
 
+puts $:.join("\n")
+
 require 'thor'
 require 'rack'
 require 'attentive'
