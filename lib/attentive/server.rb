@@ -14,6 +14,20 @@ require 'forwardable'
 
 module Attentive
   class Server < Rack::Builder
+    def start!
+      require 'rack'
+      require 'pygments'
+      require 'coffee_script'
+      require 'sass'
+
+      # make sure pygments is ready
+      Pygments.highlight("attentive")
+
+      Rack::Handler::WEBrick.run(Attentive::Server, :Port => options[:port]) do |server|
+        trap(:INT) { server.shutdown }
+      end
+    end
+
     def self.call(env)
       @app ||= Rack::Builder.new do
         map '/assets' do
@@ -28,6 +42,10 @@ module Attentive
         end
 
         map '/' do
+          Attentive.middleware.each do |opts|
+            use(*opts)
+          end
+
           run Attentive::Sinatra
         end
       end

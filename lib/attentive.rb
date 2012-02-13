@@ -9,6 +9,10 @@ module Attentive
     def has_presentation?
       @has_presentation == true
     end
+
+    def middleware
+      @middleware ||= []
+    end
   end
 
   def self.configure
@@ -23,3 +27,4 @@ module Attentive
 
   class NoPresentationError < StandardError ; end
 end
+

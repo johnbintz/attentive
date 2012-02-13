@@ -26,17 +26,7 @@ class Attentive::CLI < Thor
   method_options [ :port, '-p' ] => 9393
   def start
     if Attentive.has_presentation?
-      require 'rack'
-      require 'pygments'
-      require 'coffee_script'
-      require 'sass'
-
-      # make sure pygments is ready
-      Pygments.highlight("attentive")
-
-      Rack::Handler::WEBrick.run(Attentive::Server, :Port => options[:port]) do |server|
-        trap(:INT) { server.shutdown }
-      end
+      Attentive::Server.start!
     else
       raise Attentive::NoPresentationError
     end
