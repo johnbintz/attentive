@@ -2,6 +2,12 @@
 #= require fathom
 
 $(->
-  $('#slides').fathom(displayMode: 'multi', scrollLength: 250)
+  fathom = new Fathom('#slides', displayMode: 'multi', scrollLength: 250)
+
+  setTimeout(
+    ->
+      $(window).trigger('resize')
+    , 250
+  )
 )
 

@@ -16,12 +16,47 @@ require 'pygments'
 require 'coffee_script'
 require 'sass'
 
-load 'presentation.rb'
+begin
+  load 'presentation.rb'
+rescue LoadError => e
+end
 
 # make sure pygments is ready
 Pygments.highlight("attentive")
 
-Rack::Handler::WEBrick.run(Attentive::Server, :Port => 9393) do |server|
-  trap(:INT) { server.shutdown }
+class Attentive::CLI < Thor
+  include Thor::Actions
+
+  default_task :start
+
+  desc "start", "Start a Rack server for previewing the presentation"
+  method_options [ :port, '-p' ] => 9393
+  def start
+    if Attentive.has_presentation?
+      Rack::Handler::WEBrick.run(Attentive::Server, :Port => options[:port]) do |server|
+        trap(:INT) { server.shutdown }
+      end
+    else
+      raise Attentive::NoPresentationError
+    end
+  end
+
+  def self.source_root
+    File.expand_path('../../skel', __FILE__)
+  end
+
+  desc "create", "Create a new skeleton presentation"
+  def create(name)
+    self.destination_root = File.join(Dir.pwd, name)
+
+    Dir[File.join(self.class.source_root, '**/*')].each do |file|
+      if File.file?(file)
+        filename = file.gsub(self.class.source_root + '/', '')
+
+        template filename, filename
+      end
+    end
+  end
 end
 
+Attentive::CLI.start

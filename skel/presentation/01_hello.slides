@@ -1,0 +1,32 @@
+!SLIDE
+# Hello! Welcome to Attentive.
+
+!SLIDE
+# You can put Markdown in these slides...
+
+!SLIDE
+<h1>...or HTML</h1>
+
+!SLIDE
+# or code!
+
+``` ruby
+class Cat
+  def meow
+    "meow"
+  end
+end
+```
+
+!SLIDE
+# Easily style your slides using Sass & Compass...
+
+!SLIDE
+# Add other interactivity (if you want) with CoffeeScript...
+
+!SLIDE
+# Configure your presentation with Ruby!
+
+!SLIDE
+## [github.com/johnbintz/attentive](http://github.com/johnbintz/attentive)
+
