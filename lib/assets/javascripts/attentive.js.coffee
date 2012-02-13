@@ -7,7 +7,7 @@ $(->
   setTimeout(
     ->
       $(window).trigger('resize')
-    , 250
+    , 500
   )
 )
 
