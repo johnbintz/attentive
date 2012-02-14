@@ -29,8 +29,6 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'rdiscount'
   gem.add_dependency 'pygments.rb'
 
-  gem.add_dependency 'jquery-rails'
-
   gem.add_dependency 'thor'
 end
 

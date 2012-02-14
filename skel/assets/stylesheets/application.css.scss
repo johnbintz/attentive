@@ -3,3 +3,14 @@
 h1, h2, h3, li, p {
   font-family: Nunito, sans-serif;
 }
+
+#slides {
+  @include transition-duration(0.5s);
+
+  .slide {
+    opacity: 0.4;
+
+    &.active { opacity: 1.0 }
+  }
+}
+

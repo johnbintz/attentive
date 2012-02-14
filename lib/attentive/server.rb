@@ -20,7 +20,7 @@ module Attentive
       require 'coffee_script'
       require 'sass'
 
-      # make sure pygments is ready
+      # make sure pygments is ready before starting a new thread
       Pygments.highlight("attentive")
 
       Rack::Handler::WEBrick.run(Attentive::Server, :Port => options[:port]) do |server|
@@ -35,7 +35,6 @@ module Attentive
           env.append_path 'assets/javascripts'
           env.append_path 'assets/stylesheets'
           env.append_path 'assets/images'
-          env.append_path Attentive.root.join('vendor/assets/javascripts')
           env.append_path Attentive.root.join('lib/assets/javascripts')
           env.append_path Attentive.root.join('lib/assets/stylesheets')
 
@@ -143,7 +142,7 @@ module Attentive
       end
     end
 
-    get '/' do
+    get %r{/?\d*} do
       haml :index, :ugly => true
     end
 

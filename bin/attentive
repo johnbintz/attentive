@@ -48,6 +48,46 @@ class Attentive::CLI < Thor
       end
     end
   end
+
+  desc "static", "Create a static copy of the site in _site"
+  def static
+    urls = [ '/' ]
+
+    Dir['assets/**/*'].each do |file|
+      if File.file?(file)
+        parts = file.split('/')[2..-1]
+
+        if !parts.empty?
+          file = parts.join('/')
+
+          %w{js css}.each do |root|
+            file.gsub!(%r{([^/]+\.#{root}).*$}, '\1')
+          end
+
+          urls << File.join('', 'assets', file)
+        end
+      end
+    end
+
+    target_dir = "_site"
+
+    FileUtils.rm_rf target_dir
+    FileUtils.mkdir_p target_dir
+
+    Attentive.middleware.replace([])
+
+    urls.each do |url|
+      response = Attentive::Server.call(Rack::MockRequest.env_for(url))
+
+      target = "#{target_dir}#{url}"
+      target += "index.html" if target[-1..-1] == '/'
+
+      puts "Writing #{target}..."
+
+      FileUtils.mkdir_p(File.dirname(target))
+      File.open(target, 'wb') { |fh| response.last.each { |part| fh.print part } }
+    end
+  end
 end
 
 Attentive::CLI.start
