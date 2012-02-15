@@ -1,6 +1,6 @@
 Attentive is a new take on Ruby presentation software. It provides lots of smart things already set up for you:
 
-* A simple slide transition system using a slightly hacked up version of Fathom.js.
+* A simple slide transition system written from scratch with no jQuery (oh snap!)
 * Sass, Compass, and CoffeeScript all plugged into Sprockets and ready to generate your presentation's CSS and JavaScripts.
 * Pygments for syntax highlighting.
 * Simple slide syntax, really really similar to how Showoff does it.
@@ -19,4 +19,16 @@ Run the presentation that's in the current directory on port 9393.
 
 Run the current presentation on another port.
 
+`attentive static`
+
+Generate a static copy of the presentation and dependent files into `_site`.
+
 Edit `presentation.rb` and start adding `.slides` files in `presentation/`. The files are processed in sort order.
+
+While the presentation is running:
+
+* Click a slide, use the spacebar, or the right arrow to advance
+* Use the left arrow to go back
+* Hit [ Shift ]-T to toggle a timer on and off, then lowercase t to turn it on and off
+* Hit \ to reset the timer
+

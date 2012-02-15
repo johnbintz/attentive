@@ -1,3 +1,56 @@
+class PresentationTimer
+  constructor: ->
+    @time = 0
+    @el = document.createElement('div')
+    @el.classList.add('timer')
+
+    this.render()
+
+  render: ->
+    @el.innerHTML = this.formattedTime()
+
+  start: ->
+    @_runner = this.runner()
+
+  runner: ->
+    setTimeout(
+      =>
+        this.render()
+        @time += 1
+        this.runner() if @_runner?
+      , 1000
+    )
+
+  stop: ->
+    clearTimeout(@_runner)
+    @_runner = null
+
+  reset: ->
+    this.stop()
+    @time = 0
+    this.render()
+
+  toggle: ->
+    if @_runner?
+      this.stop()
+    else
+      this.start()
+
+  toggleVisible: ->
+    @el.classList.toggle('hide')
+
+  isVisible: ->
+    !@el.classList.contains('hide')
+
+  hide: ->
+    @el.classList.add('hide')
+
+  formattedTime: ->
+    minute = "00#{Math.floor(@time / 60)}".slice(-2)
+    second = "00#{@time % 60}".slice(-2)
+
+    "#{minute}:#{second}"
+
 class this.Attentive
   @setup: (identifier) ->
     starter = -> (new Attentive(identifier)).start()
@@ -7,6 +60,11 @@ class this.Attentive
     @length = @allSlides().length
     @priorSlide = null
     @initialRender = true
+
+    @timer = new PresentationTimer()
+    @timer.hide()
+
+    document.querySelector('body').appendChild(@timer.el)
 
   bodyClassList: ->
     @_bodyClassList ||= document.querySelector('body').classList
@@ -45,10 +103,19 @@ class this.Attentive
 
   handleKeyDown: (e) =>
     switch e.keyCode
+      when 72
+        this.advanceTo(0)
       when 37
         this.advance(-1)
       when 39, 32
         this.advance()
+      when 220
+        @timer.reset()
+      when 84
+        if e.shiftKey
+          @timer.toggleVisible()
+        else
+          @timer.toggle() if @timer.isVisible()
 
   advance: (offset = 1) =>
     this.advanceTo(Math.max(Math.min(@currentSlide + offset, @length - 1), 0))
@@ -87,9 +154,4 @@ class this.Attentive
       @bodyClassList().remove('loading')
 
       @initialRender = false
-
-      if this.isFile()
-        setTimeout(this.calculate, 200)
-      else
-        this.calculate()
 
