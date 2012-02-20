@@ -19,6 +19,10 @@ body, html {
   &.hide {
     display: none;
   }
+
+  &.running {
+    color: #c00;
+  }
 }
 
 #slides-container {
@@ -51,20 +55,24 @@ body.loading {
       left: 5%;
       width: 90%;
 
+      * {
+        line-height: 105%;
+      }
+
       h1, h2, h3 {
         margin: 0;
       }
 
       h1 {
-        font-size: 5em;
+        font-size: 6.5em;
       }
 
       h2 {
-        font-size: 3em;
+        font-size: 4em;
       }
 
       h3 {
-        font-size: 1.75em;
+        font-size: 2em;
       }
 
       div.highlight {

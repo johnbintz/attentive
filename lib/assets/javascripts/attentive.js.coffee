@@ -1,3 +1,5 @@
+#= require underscore
+#
 class PresentationTimer
   constructor: ->
     @time = 0
@@ -11,6 +13,7 @@ class PresentationTimer
 
   start: ->
     @_runner = this.runner()
+    @el.classList.add('running')
 
   runner: ->
     setTimeout(
@@ -23,6 +26,7 @@ class PresentationTimer
 
   stop: ->
     clearTimeout(@_runner)
+    @el.classList.remove('running')
     @_runner = null
 
   reset: ->
@@ -51,6 +55,28 @@ class PresentationTimer
 
     "#{minute}:#{second}"
 
+class Slide
+  @fromList: (list) ->
+    result = (new Slide(slide) for slide in list)
+
+  constructor: (@dom) ->
+
+  recalculate: =>
+    @dom.style['width'] = "#{window.innerWidth}px"
+
+    currentMarginTop = Number(@dom.style['marginTop'].replace(/[^\d\.]/g, ''))
+    height = (window.innerHeight - @dom.querySelector('.content').clientHeight) / 2
+
+    if height != currentMarginTop
+      @dom.style['marginTop'] = "#{height}px"
+      true
+
+  activate: =>
+    @dom.classList.add('active')
+
+  deactivate: =>
+    @dom.classList.remove('active')
+
 class this.Attentive
   @setup: (identifier) ->
     starter = -> (new Attentive(identifier)).start()
@@ -64,13 +90,15 @@ class this.Attentive
     @timer = new PresentationTimer()
     @timer.hide()
 
+    @currentWindowHeight = null
+
     document.querySelector('body').appendChild(@timer.el)
 
   bodyClassList: ->
     @_bodyClassList ||= document.querySelector('body').classList
 
   allSlides: ->
-    @_allSlides ||= @slidesViewer().querySelectorAll('.slide')
+    @_allSlides ||= Slide.fromList(@slidesViewer().querySelectorAll('.slide'))
 
   slidesViewer: ->
     @_slidesViewer ||= document.querySelector(@identifier)
@@ -83,7 +111,7 @@ class this.Attentive
 
     document.addEventListener('click', @handleClick, false)
     document.addEventListener('keydown', @handleKeyDown, false)
-    window.addEventListener('resize', @calculate, false)
+    window.addEventListener('resize', _.throttle(@calculate, 500), false)
 
     this.advanceTo(this.slideFromLocation())
 
@@ -134,19 +162,29 @@ class this.Attentive
       history.pushState({ index: @currentSlide }, '', @currentSlide)
 
   calculate: =>
-    for slide in @allSlides()
-      slide.style['width'] = "#{window.innerWidth}px"
+    if @currentWindowHeight != window.innerHeight
+      recalculate = true
+      times = 3
 
-      height = (window.innerHeight - slide.querySelector('.content').clientHeight) / 2
+      while recalculate and times > 0
+        recalculate = false
+        times -= 1
 
-      slide.style['marginTop'] = "#{height}px"
+        for slide in @allSlides()
+          recalculate = true if slide.recalculate()
 
-    @slidesViewer().style['width'] = "#{window.innerWidth * @allSlides().length}px"
+      @currentWindowHeight = window.innerHeight
+
+      @slidesViewer().style['width'] = "#{window.innerWidth * @allSlides().length}px"
+
     this.align()
 
+  getCurrentSlide: =>
+    @allSlides()[@currentSlide]
+
   align: =>
-    @allSlides()[@priorSlide].classList.remove('active') if @priorSlide
-    @allSlides()[@currentSlide].classList.add('active')
+    @allSlides()[@priorSlide].deactivate() if @priorSlide
+    this.getCurrentSlide().activate()
 
     @slidesViewer().style['left'] = "-#{@currentSlide * window.innerWidth}px"
 

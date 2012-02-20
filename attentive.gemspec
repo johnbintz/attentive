@@ -30,5 +30,6 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'pygments.rb'
 
   gem.add_dependency 'thor'
+  gem.add_dependency 'backbone-rails'
 end
 
