@@ -79,7 +79,12 @@ class Slide
 
 class this.Attentive
   @setup: (identifier) ->
-    starter = -> (new Attentive(identifier)).start()
+    starter = ->
+      setTimeout(
+        ->
+          (new Attentive(identifier)).start()
+        , 250
+      )
     window.addEventListener('DOMContentLoaded', starter, false)
 
   constructor: (@identifier) ->
