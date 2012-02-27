@@ -109,8 +109,6 @@ class this.Attentive
     @_slidesViewer ||= document.querySelector(@identifier)
 
   start: ->
-    @bodyClassList().add('loading')
-
     if !this.isFile()
       window.addEventListener('popstate', @handlePopState, false)
 
@@ -118,7 +116,20 @@ class this.Attentive
     document.addEventListener('keydown', @handleKeyDown, false)
     window.addEventListener('resize', _.throttle(@calculate, 500), false)
 
-    this.advanceTo(this.slideFromLocation())
+    imageWait = null
+    imageWait = =>
+      wait = false
+
+      for slide in @allSlides()
+        for img in slide.dom.getElementsByTagName('img')
+          wait = true if !img.complete
+
+      if wait
+        setTimeout(imageWait, 100)
+      else
+        this.advanceTo(this.slideFromLocation())
+
+    imageWait()
 
   slideFromLocation: ->
     value = if this.isFile()
@@ -197,4 +208,5 @@ class this.Attentive
       @bodyClassList().remove('loading')
 
       @initialRender = false
-
+      @currentWindowHeight = null
+      this.calculate()

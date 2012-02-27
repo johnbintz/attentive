@@ -33,8 +33,8 @@ body, html {
 }
 
 body.loading {
-  #slides-container {
-    opacity: 0;
+  .slide {
+    opacity: 0 !important;
   }
 }
 
