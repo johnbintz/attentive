@@ -1,3 +1,6 @@
+.tmp/
+chromedriver.log
+node_modules/
 *.gem
 *.rbc
 .bundle

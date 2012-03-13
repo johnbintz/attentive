@@ -20,6 +20,8 @@ module Attentive
       require 'coffee_script'
       require 'sass'
 
+      Tilt::CoffeeScriptTemplate.default_bare = true
+
       # make sure pygments is ready before starting a new thread
       Pygments.highlight("attentive")
 
