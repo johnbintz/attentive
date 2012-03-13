@@ -23,6 +23,11 @@ Run the current presentation on another port.
 
 Generate a static copy of the presentation and dependent files into `_site`.
 
+`attentive gh-pages`
+
+Generate a static copy, commit it to the `gh-pages` branch of your site.
+`gh-pages` gets created if it doesn't exist.
+
 Edit `presentation.rb` and start adding `.slides` files in `presentation/`. The files are processed in sort order.
 
 While the presentation is running:

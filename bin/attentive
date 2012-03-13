@@ -87,6 +87,8 @@ class Attentive::CLI < Thor
       FileUtils.mkdir_p(File.dirname(target))
       File.open(target, 'wb') { |fh| response.last.each { |part| fh.print part } }
     end
+
+    FileUtils.rm_rf '.sass-cache' if File.directory?('.sass-cache')
   end
 
   desc "gh-pages", "Commit the static site to the associated GitHub pages account"
@@ -109,8 +111,11 @@ class Attentive::CLI < Thor
       system %{git checkout gh-pages}
     end
 
+    system %{rm -Rf *}
     system %{cp -Rpv #{target}/* .}
-    system %{git add . && git commit -a -m "Update published site"}
+    system %{git add .}
+    system %{git add *}
+    system %{git commit -a -m "Update published site"}
     system %{git checkout master}
   end
 end
