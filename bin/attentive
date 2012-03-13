@@ -88,6 +88,31 @@ class Attentive::CLI < Thor
       File.open(target, 'wb') { |fh| response.last.each { |part| fh.print part } }
     end
   end
+
+  desc "gh-pages", "Commit the static site to the associated GitHub pages account"
+  def gh_pages
+    static
+
+    target = "/tmp/attentive-#{Time.now.to_i}"
+
+    system %{cp -Rpv _site #{target}}
+
+    system %{git checkout gh-pages}
+    if $?.exitstatus == 1
+      puts "Creating gh-pages branch..."
+      system %{git add . && git commit -a -m "pre-gh pages creation"}
+
+      system %{git symbolic-ref HEAD refs/heads/gh-pages}
+      system %{rm .git/index}
+      system %{git clean -fdx}
+
+      system %{git checkout gh-pages}
+    end
+
+    system %{cp -Rpv #{target}/* .}
+    system %{git add . && git commit -a -m "Update published site"}
+    system %{git checkout master}
+  end
 end
 
 Attentive::CLI.start
