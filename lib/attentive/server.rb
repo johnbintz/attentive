@@ -2,6 +2,7 @@ require 'sprockets'
 require 'sprockets-vendor_gems'
 require 'sprockets-sass'
 require 'compass'
+require 'attentive/compass_patches'
 require 'sinatra'
 require 'nokogiri'
 require 'rdiscount'
@@ -13,7 +14,23 @@ require 'rack/builder'
 require 'forwardable'
 
 module Attentive
+  module Helpers
+    def image_path(path, options)
+      if resolve(path, options)
+        return "/assets/#{path}"
+      end
+
+      nil
+    end
+
+
+  end
   class Server < Rack::Builder
+
+    def self.sprockets_env
+      @sprockets_env ||= Sprockets::EnvironmentWithVendoredGems.new
+    end
+
     def self.start(options)
       require 'rack'
       require 'pygments'
@@ -33,12 +50,13 @@ module Attentive
     def self.call(env)
       @app ||= Rack::Builder.new do
         map '/assets' do
-          env = Sprockets::EnvironmentWithVendoredGems.new
+          env = ::Attentive::Server.sprockets_env
           env.append_path 'assets/javascripts'
           env.append_path 'assets/stylesheets'
           env.append_path 'assets/images'
           env.append_path Attentive.root.join('lib/assets/javascripts')
           env.append_path Attentive.root.join('lib/assets/stylesheets')
+          env.context_class.send(:include, ::Attentive::Helpers)
 
           run env
         end
