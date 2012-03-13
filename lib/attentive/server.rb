@@ -22,11 +22,9 @@ module Attentive
 
       nil
     end
-
-
   end
-  class Server < Rack::Builder
 
+  class Server < Rack::Builder
     def self.sprockets_env
       @sprockets_env ||= Sprockets::EnvironmentWithVendoredGems.new
     end
@@ -37,7 +35,7 @@ module Attentive
       require 'coffee_script'
       require 'sass'
 
-      Tilt::CoffeeScriptTemplate.default_bare = true
+      require 'tilt/coffee'
 
       # make sure pygments is ready before starting a new thread
       Pygments.highlight("attentive")
@@ -57,6 +55,8 @@ module Attentive
           env.append_path Attentive.root.join('lib/assets/javascripts')
           env.append_path Attentive.root.join('lib/assets/stylesheets')
           env.context_class.send(:include, ::Attentive::Helpers)
+
+          Tilt::CoffeeScriptTemplate.default_bare = true
 
           run env
         end
