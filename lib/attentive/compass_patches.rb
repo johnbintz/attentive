@@ -1,0 +1,21 @@
+module Compass::RailsImageFunctionPatch
+  private
+  
+  def image_path_for_size(image_file)
+    begin
+      file = ::Attentive::Server.sprockets_env.find_asset(image_file)
+      return file
+    rescue ::Sprockets::FileOutsidePaths
+      return super(image_file)
+    end
+  end
+end
+
+module Sass::Script::Functions
+  include Compass::RailsImageFunctionPatch
+end
+
+# Wierd that this has to be re-included to pick up sub-modules. Ruby bug?
+class Sass::Script::Functions::EvaluationContext
+  include Sass::Script::Functions
+end
