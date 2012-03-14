@@ -10,22 +10,30 @@ class Attentive.PresentationTimer
 
   ensureEl: ->
     if !@el
-      @el = document.createElement('div')
+      @el = this._createDiv()
       @el.classList.add('timer')
     @el
 
+  _createDiv: -> document.createElement('div')
+
+  addClass: (className) ->
+    @ensureEl().classList.add(className)
+
   start: ->
     @_runner = this.runner()
-    @ensureEl().classList.add('running')
+    this.addClass('running')
 
   runner: ->
     setTimeout(
       =>
-        this.render()
-        @time += 1
-        this.runner() if @_runner?
+        this.handleRunner()
       , 1000
     )
+
+  handleRunner: ->
+    this.render()
+    @time += 1
+    this.runner() if @_runner?
 
   stop: ->
     clearTimeout(@_runner)

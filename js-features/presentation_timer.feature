@@ -7,7 +7,9 @@ Feature: Presentation Timer
     Then the counter should show the time "00:00"
       And the counter should not be running
 
-  Scenario: Start the timer
+  Scenario: Manage the timer
     When I start the timer
     Then the counter should be running
+    When I stop the timer
+    Then the counter should not be running
 
