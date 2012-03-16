@@ -27,7 +27,7 @@ guard 'flowerbox-unit' do
   watch(%r{^spec/javascripts})
 end
 
-guard 'flowerbox-integration' do
+guard 'flowerbox-integration', :verbose_server => true do
   watch(%r{^js-features})
 end
 

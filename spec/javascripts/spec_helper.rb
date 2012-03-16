@@ -5,5 +5,6 @@ Flowerbox.configure do |c|
   c.asset_paths << "lib/assets/javascripts"
 
   c.report_with :verbose
+  c.port = 25123
 end
 
