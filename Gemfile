@@ -4,5 +4,4 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'flowerbox', :path => '../flowerbox'
-gem 'flowerbox-delivery', :path => '../flowerbox-delivery'
 gem 'guard'
