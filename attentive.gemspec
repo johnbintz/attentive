@@ -16,6 +16,7 @@ Gem::Specification.new do |gem|
   gem.version       = Attentive::VERSION
 
   gem.add_dependency 'sinatra'
+  gem.add_dependency 'naturalsort', '~> 1.1.1'
 
   gem.add_dependency 'sprockets'
   gem.add_dependency 'sprockets-vendor_gems'

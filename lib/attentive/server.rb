@@ -13,6 +13,8 @@ require 'rack/builder'
 
 require 'forwardable'
 
+require 'natural_sort_kernel'
+
 module Attentive
   module Helpers
     def image_path(path, options)
@@ -147,7 +149,7 @@ module Attentive
       def slides
         slides = []
 
-        Dir['presentation/*.slides'].sort.each do |file|
+        Dir['presentation/*.slides'].natural_sort.each do |file|
           File.readlines(file).each do |line|
             if line[%r{^!SLIDE}]
               slides << Slide.new(:classes => line.split(' ')[1..-1])
