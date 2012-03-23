@@ -40,7 +40,7 @@ module Attentive
       # make sure pygments is ready before starting a new thread
       Pygments.highlight("attentive")
 
-      Rack::Handler::WEBrick.run(Attentive::Server, :Port => options[:port]) do |server|
+      Rack::Handler.default.run(Attentive::Server, :Port => options[:port]) do |server|
         trap(:INT) { server.shutdown }
       end
     end
