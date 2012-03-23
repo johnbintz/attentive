@@ -32,9 +32,6 @@ class Attentive.Presentation
     @_slidesViewer ||= document.querySelector(@identifier)
 
   start: ->
-    if !this.isFile()
-      window.addEventListener('popstate', @handlePopState, false)
-
     @timer.render()
 
     document.addEventListener('click', @handleClick, false)
@@ -57,15 +54,10 @@ class Attentive.Presentation
     imageWait()
 
   slideFromLocation: ->
-    value = if this.isFile()
-      location.hash
-    else
-      location.pathname
-
-    Number(value.substr(1))
+    Number(location.hash.substr(1))
 
   handlePopState: (e) =>
-    this.advanceTo(if e.state then e.state.index else this.slideFromLocation())
+    this.advanceTo(this.slideFromLocation())
 
   handleClick: (e) =>
     this.advance() if e.target.tagName != 'A'
@@ -89,18 +81,13 @@ class Attentive.Presentation
   advance: (offset = 1) =>
     this.advanceTo(Math.max(Math.min(@currentSlide + offset, @length - 1), 0))
 
-  isFile: => location.href.slice(0, 4) == 'file'
-
   advanceTo: (index) =>
     @priorSlide = @currentSlide
     @currentSlide = index || 0
 
     this.calculate()
 
-    if this.isFile()
-      location.hash = @currentSlide
-    else
-      history.pushState({ index: @currentSlide }, '', @currentSlide)
+    location.hash = @currentSlide
 
   calculate: =>
     if @currentWindowHeight != window.innerHeight
