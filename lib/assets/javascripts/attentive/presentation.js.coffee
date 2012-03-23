@@ -74,9 +74,9 @@ class Attentive.Presentation
     switch e.keyCode
       when 72
         this.advanceTo(0)
-      when 37
+      when 37, 33
         this.advance(-1)
-      when 39, 32
+      when 39, 32, 34
         this.advance()
       when 220
         @timer.reset()
