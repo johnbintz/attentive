@@ -6,7 +6,6 @@ require 'attentive/compass_patches'
 require 'sinatra'
 require 'nokogiri'
 require 'rdiscount'
-require 'pygments'
 require 'sinatra/base'
 
 require 'rack/builder'
@@ -33,14 +32,16 @@ module Attentive
 
     def self.start(options)
       require 'rack'
-      require 'pygments'
       require 'coffee_script'
       require 'sass'
 
       require 'tilt/coffee'
+      require 'pygments'
 
-      # make sure pygments is ready before starting a new thread
-      Pygments.highlight("attentive")
+      if !Attentive.use_pygments_command_line?
+        # make sure pygments is ready before starting a new thread
+        Pygments.highlight("attentive")
+      end
 
       Rack::Handler.default.run(Attentive::Server, :Port => options[:port]) do |server|
         trap(:INT) do
@@ -79,6 +80,32 @@ module Attentive
     end
   end
 
+  class Highlight
+    attr_reader :code, :lang
+
+    def self.run(*args)
+      new(*args).run
+    end
+
+    def initialize(code, lang)
+      @code, @lang = code, lang
+    end
+
+    def run
+      if Attentive.use_pygments_command_line?
+        require 'tempfile'
+
+        temp = Tempfile.new('pygments')
+        temp.print code
+        temp.close
+
+        %x{pygmentize -l #{lang} -f html #{temp.path}}
+      else
+        Pygments.highlight(code, :lexer => language)
+      end
+    end
+  end
+
   class Slide
     extend Forwardable
 
@@ -104,7 +131,9 @@ module Attentive
       lines.each do |line|
         if line[%r{^```}]
           if code_block
-            new_lines << Pygments.highlight(code_block.join, :lexer => code_language)
+
+            new_lines << Highlight.run(code_block.join, code_language)
+
             code_block = nil
           else
             code_block = []
@@ -131,7 +160,7 @@ module Attentive
     end
 
     def markdown_output
-      RDiscount.new(code_output.join).to_html
+      RDiscount.new(code_output.collect(&:to_s).join).to_html
     end
 
     def to_html

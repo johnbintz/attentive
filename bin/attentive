@@ -1,10 +1,7 @@
 #!/usr/bin/env ruby
 
 if !ENV['BUNDLE_GEMFILE'] && File.file?('Gemfile')
-  require 'rubygems'
-  require 'bundler/setup'
-
-  $: << File.expand_path('../../lib', __FILE__)
+  Kernel.exec("bundle", "exec", $0, *ARGV)
 end
 
 require 'thor'

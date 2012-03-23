@@ -4,10 +4,14 @@ module Attentive
   autoload :Server, 'attentive/server'
 
   class << self
-    attr_accessor :title, :has_presentation
+    attr_accessor :title, :has_presentation, :use_pygments_command_line
 
     def has_presentation?
       @has_presentation == true
+    end
+
+    def use_pygments_command_line?
+      (@use_pygments_command_line ||= true) == true
     end
 
     def middleware
