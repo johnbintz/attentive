@@ -1,11 +1,9 @@
 #!/usr/bin/env ruby
 
-require 'rubygems'
-require 'bundler'
+if !ENV['BUNDLE_GEMFILE'] && File.file?('Gemfile')
+  require 'rubygems'
+  require 'bundler/setup'
 
-begin
-  Bundler.setup(:default)
-rescue Bundler::GemfileNotFound
   $: << File.expand_path('../../lib', __FILE__)
 end
 

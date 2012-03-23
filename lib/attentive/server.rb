@@ -41,7 +41,10 @@ module Attentive
       Pygments.highlight("attentive")
 
       Rack::Handler.default.run(Attentive::Server, :Port => options[:port]) do |server|
-        trap(:INT) { server.shutdown }
+        trap(:INT) do
+          server.shutdown if server.respond_to?(:server)
+          server.stop if server.respond_to?(:stop)
+        end
       end
     end
 
