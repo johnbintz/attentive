@@ -126,7 +126,15 @@ class Attentive::CLI < Thor
 
     browser.navigate.to "file://#{Dir.pwd}/_site/index.html"
 
-    browser.manage.window.resize_to 1024, 768
+    target_width = 1024
+    target_height = 768
+
+    browser.manage.window.resize_to target_width, target_height
+
+    current_width = browser.execute_script('return window.innerWidth')
+    current_height = browser.execute_script('return window.innerHeight')
+
+    browser.manage.window.resize_to target_width + (target_width - current_width), target_height + (target_height - current_height)
 
     get_current_slide = lambda { ((browser.execute_script('return document.location.href') || '')[%r{#(\d+)$}, 1] || -1).to_i }
 
