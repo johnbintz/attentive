@@ -114,11 +114,11 @@ class Attentive::CLI < Thor
     system %{git checkout master}
   end
 
-  desc 'export', 'Export each slide as a .png file using Selenium'
-  def export
+  desc 'export [DIMENSIONS]', 'Export each slide as a .png file using Selenium'
+  def export(dimensions = '1024x768')
     puts "Exporting to static HTML..."
 
-    #static
+    static
 
     require 'selenium-webdriver'
 
@@ -126,8 +126,7 @@ class Attentive::CLI < Thor
 
     browser.navigate.to "file://#{Dir.pwd}/_site/index.html"
 
-    target_width = 1024
-    target_height = 768
+    target_width, target_height = dimensions.split('x').collect(&:to_i)
 
     browser.manage.window.resize_to target_width, target_height
 
