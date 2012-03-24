@@ -118,7 +118,7 @@ class Attentive::CLI < Thor
   def export
     puts "Exporting to static HTML..."
 
-    static
+    #static
 
     require 'selenium-webdriver'
 
@@ -126,7 +126,7 @@ class Attentive::CLI < Thor
 
     browser.navigate.to "file://#{Dir.pwd}/_site/index.html"
 
-    browser.execute_script('window.resizeTo(1024, 768)')
+    browser.manage.window.resize_to 1024, 768
 
     get_current_slide = lambda { ((browser.execute_script('return document.location.href') || '')[%r{#(\d+)$}, 1] || -1).to_i }
 
