@@ -34,8 +34,9 @@ class Attentive.Presentation
   start: ->
     @timer.render()
 
-    document.addEventListener('click', @handleClick, false)
     document.addEventListener('keydown', @handleKeyDown, false)
+    document.addEventListener('mousedown', @handleMouseDown, false)
+    document.addEventListener('mouseup', @handleMouseUp, false)
     window.addEventListener('resize', _.throttle(@calculate, 500), false)
 
     imageWait = null
@@ -59,8 +60,18 @@ class Attentive.Presentation
   handlePopState: (e) =>
     this.advanceTo(this.slideFromLocation())
 
-  handleClick: (e) =>
-    this.advance() if e.target.tagName != 'A'
+  handleMouseDown: (e) =>
+    @startSwipeX = e.x
+
+  handleMouseUp: (e) =>
+    distance = @startSwipeX - e.x
+    if Math.abs(distance) > 10
+      if distance < 0
+        this.advance(-1)
+      else
+        this.advance(1)
+    else
+      this.advance() if e.target.tagName != 'A'
 
   handleKeyDown: (e) =>
     switch e.keyCode

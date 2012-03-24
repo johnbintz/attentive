@@ -7,6 +7,7 @@ require 'sinatra'
 require 'nokogiri'
 require 'rdiscount'
 require 'sinatra/base'
+require 'pygments'
 
 require 'rack/builder'
 
@@ -30,13 +31,12 @@ module Attentive
       @sprockets_env ||= Sprockets::EnvironmentWithVendoredGems.new
     end
 
-    def self.start(options)
+    def self.start(options, &block)
       require 'rack'
       require 'coffee_script'
       require 'sass'
 
       require 'tilt/coffee'
-      require 'pygments'
 
       if !Attentive.use_pygments_command_line?
         # make sure pygments is ready before starting a new thread
@@ -44,6 +44,8 @@ module Attentive
       end
 
       Rack::Handler.default.run(Attentive::Server, :Port => options[:port]) do |server|
+        block.call(server) if block
+
         trap(:INT) do
           server.shutdown if server.respond_to?(:server)
           server.stop if server.respond_to?(:stop)

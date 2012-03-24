@@ -113,6 +113,47 @@ class Attentive::CLI < Thor
     system %{git commit -a -m "Update published site"}
     system %{git checkout master}
   end
+
+  desc 'export', 'Export each slide as a .png file using Selenium'
+  def export
+    puts "Exporting to static HTML..."
+
+    static
+
+    require 'selenium-webdriver'
+
+    browser = Selenium::WebDriver.for(:firefox)
+
+    browser.navigate.to "file://#{Dir.pwd}/_site/index.html"
+
+    browser.execute_script('window.resizeTo(1024, 768)')
+
+    get_current_slide = lambda { ((browser.execute_script('return document.location.href') || '')[%r{#(\d+)$}, 1] || -1).to_i }
+
+    FileUtils.rm_rf '_export'
+    FileUtils.mkdir_p '_export'
+
+    while (current_slide = get_current_slide.call) == -1
+      sleep 0.1
+    end
+
+    while true do
+      browser.save_screenshot("_export/#{current_slide}.png")
+
+      browser.find_element(:css, 'body').click
+
+      sleep 1
+
+      next_slide = get_current_slide.call
+
+      break if next_slide == current_slide
+
+      current_slide = next_slide
+    end
+  ensure
+    browser.close if browser
+  end
 end
 
 Attentive::CLI.start
+

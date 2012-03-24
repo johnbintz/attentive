@@ -2,6 +2,7 @@ require "attentive/version"
 
 module Attentive
   autoload :Server, 'attentive/server'
+  autoload :Export, 'attentive/export'
 
   class << self
     attr_accessor :title, :has_presentation, :use_pygments_command_line

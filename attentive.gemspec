@@ -33,5 +33,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'thor'
   gem.add_dependency 'backbone-rails'
   gem.add_dependency 'rack', '~> 1.4.0'
+
+  gem.add_dependency 'selenium-webdriver'
 end
 
